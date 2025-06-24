@@ -3,50 +3,74 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>WebAR Test</title>
+  <title>Esperienza AR</title>
   <script type="module" src="https://unpkg.com/@google/model-viewer/dist/model-viewer.min.js"></script>
   <style>
-    body {
+    html, body {
       margin: 0;
+      padding: 0;
+      height: 100%;
+      background: black;
       display: flex;
       justify-content: center;
       align-items: center;
-      height: 100vh;
-      background: #000;
+      font-family: sans-serif;
     }
-    model-viewer {
-      width: 100%;
-      height: 100%;
-    }
-    .ar-button {
+
+    .start-button {
       background: white;
-      padding: 12px;
+      color: black;
+      padding: 16px 28px;
+      font-size: 18px;
       border: none;
-      font-size: 16px;
-      border-radius: 6px;
+      border-radius: 8px;
       cursor: pointer;
-      position: absolute;
-      bottom: 16px;
-      left: 50%;
-      transform: translateX(-50%);
+      box-shadow: 0 4px 8px rgba(0,0,0,0.4);
+      transition: transform 0.2s ease;
+    }
+
+    .start-button:active {
+      transform: scale(0.95);
+    }
+
+    model-viewer {
+      display: none; /* Il modello non viene mostrato nella pagina */
     }
   </style>
 </head>
 <body>
 
+  <!-- Bottone per attivare direttamente l'AR -->
+  <button class="start-button" id="launch-ar">Visualizza in AR</button>
+
+  <!-- Componente model-viewer configurato solo per AR -->
   <model-viewer
+    id="ar-viewer"
     src="model.glb"
     ios-src="model.usdz"
-    alt="Modello in AR"
+    alt="Modello AR"
     ar
     ar-modes="scene-viewer webxr quick-look"
-    auto-rotate
     camera-controls
+    ar-placement="auto"
+    ar-scale="auto"
     shadow-intensity="1"
-    exposure="1"
   >
-    <button slot="ar-button" class="ar-button">Visualizza in AR</button>
+    <button slot="ar-button">Visualizza in AR</button>
   </model-viewer>
+
+  <script>
+    const viewer = document.getElementById('ar-viewer');
+    const button = document.getElementById('launch-ar');
+
+    button.addEventListener('click', () => {
+      if (viewer.canActivateAR) {
+        viewer.activateAR();
+      } else {
+        alert('La modalità AR non è supportata su questo dispositivo.');
+      }
+    });
+  </script>
 
 </body>
 </html>
