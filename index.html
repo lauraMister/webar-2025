@@ -86,7 +86,7 @@
     ar-modes="scene-viewer webxr quick-look"
     ar-placement="tap"
     ar-scale="fixed"
-    scale="0.3 0.3 0.3"
+    scale="0.05 0.05 0.05"
     shadow-intensity="1"
     camera-controls
   >
@@ -111,13 +111,8 @@
     viewer.addEventListener('ar-status', (event) => {
       if (event.detail.status === 'session-started') {
         button.style.display = 'none';
-        // Mostra l'istruzione SOLO in WebXR (browser)
-        if (navigator.userAgent.includes('Android') || navigator.userAgent.includes('iPhone')) {
-          // Su mobile nativo, le istruzioni non sono gestibili da qui
-          // Ma WebXR su mobile è raro, quindi mostriamo sempre in sessione AR
-          instruction.style.display = 'block';
-          arActive = true;
-        }
+        instruction.style.display = 'block';
+        arActive = true;
       }
       if (event.detail.status === 'not-presenting') {
         button.style.display = 'block';
