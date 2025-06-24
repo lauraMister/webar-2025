@@ -61,12 +61,40 @@
       max-width: 90vw;
     }
 
+    .coffee-panel {
+      position: absolute;
+      top: 15%;
+      left: 50%;
+      transform: translate(-50%, 0);
+      background: rgba(40, 20, 0, 0.93);
+      color: #fff8e1;
+      padding: 28px 48px;
+      border-radius: 24px;
+      font-size: 2rem;
+      font-weight: bold;
+      box-shadow: 0 8px 32px rgba(0,0,0,0.4);
+      z-index: 30;
+      text-align: center;
+      letter-spacing: 1px;
+      animation: fadeInCoffee 1s;
+    }
+
+    @keyframes fadeInCoffee {
+      from { opacity: 0; transform: translate(-50%, -30px);}
+      to   { opacity: 1; transform: translate(-50%, 0);}
+    }
+
     model-viewer {
       display: none; /* Mostrato solo tramite JS */
     }
   </style>
 </head>
 <body>
+
+  <!-- Pannello messaggio -->
+  <div class="coffee-panel" id="coffee-panel">
+    immergiti nel caffè
+  </div>
 
   <!-- Bottone centrale per attivare AR -->
   <button class="start-button" id="launch-ar">Visualizza in AR</button>
@@ -97,6 +125,7 @@
     const viewer = document.getElementById('ar-viewer');
     const button = document.getElementById('launch-ar');
     const instruction = document.getElementById('ar-instruction');
+    const coffeePanel = document.getElementById('coffee-panel');
     let arActive = false;
 
     button.addEventListener('click', () => {
@@ -113,11 +142,13 @@
         button.style.display = 'none';
         instruction.style.display = 'block';
         arActive = true;
+        coffeePanel.style.display = 'none'; // Nasconde il pannello quando parte l'AR
       }
       if (event.detail.status === 'not-presenting') {
         button.style.display = 'block';
         instruction.style.display = 'none';
         arActive = false;
+        coffeePanel.style.display = 'block'; // Mostra di nuovo il pannello se vuoi
       }
     });
 
