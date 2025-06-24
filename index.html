@@ -73,25 +73,25 @@
 
   <!-- Overlay istruzioni AR -->
   <div class="ar-instruction" id="ar-instruction">
-    Tocca un piano per far comparire l'oggetto!
+    Tocca una superficie per posizionare il modello
   </div>
 
   <!-- Componente AR nascosto -->
- <model-viewer
-  id="ar-viewer"
-  src="model.glb"
-  ios-src="model.usdz"
-  alt="Modello 3D in AR"
-  ar
-  ar-modes="scene-viewer webxr quick-look"
-  ar-placement="tap"
-  ar-scale="fixed"
-  scale="0.05 0.05 0.05"
-  shadow-intensity="1"
-  camera-controls
->
-  <button slot="ar-button">Visualizza in AR</button>
-</model-viewer>
+  <model-viewer
+    id="ar-viewer"
+    src="model.glb"
+    ios-src="model.usdz"
+    alt="Modello 3D in AR"
+    ar
+    ar-modes="scene-viewer webxr quick-look"
+    ar-placement="tap"
+    ar-scale="fixed"
+    scale="0.05 0.05 0.05"
+    shadow-intensity="1"
+    camera-controls
+  >
+    <button slot="ar-button">Visualizza in AR</button>
+  </model-viewer>
 
   <script>
     const viewer = document.getElementById('ar-viewer');
@@ -109,5 +109,30 @@
 
     // Mostra/nasconde il bottone quando la sessione AR parte/finisce
     viewer.addEventListener('ar-status', (event) => {
-      if (event.detail.status === '*
-
+      if (event.detail.status === 'session-started') {
+        button.style.display = 'none';
+        instruction.style.display = 'block';
+        arActive = true;
+      }
+      if (event.detail.status === 'not-presenting') {
+        button.style.display = 'block';
+        instruction.style.display = 'none';
+        arActive = false;
+      }
+    });
+
+    // Nasconde il messaggio dopo il TAP per posizionare il modello (solo WebXR)
+    viewer.addEventListener('ar-placement', () => {
+      if (arActive) {
+        instruction.style.display = 'none';
+      }
+    });
+
+    // Opzionale: blocca lo scroll su mobile
+    document.body.addEventListener('touchmove', function(e) {
+      e.preventDefault();
+    }, { passive: false });
+  </script>
+
+</body>
+</html>
