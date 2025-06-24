@@ -2,7 +2,7 @@
 <html lang="it">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no" />
   <title>Esperienza AR</title>
   <script type="module" src="https://unpkg.com/@google/model-viewer/dist/model-viewer.min.js"></script>
   <style>
@@ -10,16 +10,27 @@
       margin: 0;
       padding: 0;
       height: 100%;
-      background: black;
+      width: 100%;
+      background: #000;
+      font-family: sans-serif;
+      overflow: hidden;
+    }
+
+    body {
       display: flex;
       justify-content: center;
       align-items: center;
-      font-family: sans-serif;
+      height: 100vh;
+      width: 100vw;
     }
 
     .start-button {
-      background: white;
-      color: black;
+      position: absolute;
+      left: 50%;
+      top: 50%;
+      transform: translate(-50%, -50%);
+      background: #fff;
+      color: #000;
       padding: 16px 28px;
       font-size: 18px;
       border: none;
@@ -27,14 +38,31 @@
       cursor: pointer;
       box-shadow: 0 4px 8px rgba(0,0,0,0.4);
       transition: transform 0.2s ease;
+      z-index: 10;
+    }
+    .start-button:active {
+      transform: translate(-50%, -50%) scale(0.95);
     }
 
-    .start-button:active {
-      transform: scale(0.95);
+    .ar-instruction {
+      position: absolute;
+      top: 20px;
+      left: 50%;
+      transform: translateX(-50%);
+      background: rgba(0,0,0,0.75);
+      color: #fff;
+      padding: 12px 24px;
+      border-radius: 20px;
+      font-size: 18px;
+      z-index: 20;
+      display: none;
+      pointer-events: none;
+      text-align: center;
+      max-width: 90vw;
     }
 
     model-viewer {
-      display: none; /* Non mostra il modello sulla pagina */
+      display: none; /* Mostrato solo tramite JS */
     }
   </style>
 </head>
@@ -42,6 +70,11 @@
 
   <!-- Bottone centrale per attivare AR -->
   <button class="start-button" id="launch-ar">Visualizza in AR</button>
+
+  <!-- Overlay istruzioni AR -->
+  <div class="ar-instruction" id="ar-instruction">
+    Tocca una superficie per posizionare il modello
+  </div>
 
   <!-- Componente AR nascosto -->
   <model-viewer
@@ -51,9 +84,9 @@
     alt="Modello 3D in AR"
     ar
     ar-modes="scene-viewer webxr quick-look"
-    ar-placement="auto"
+    ar-placement="tap"
     ar-scale="fixed"
-    scale="0.1 0.1 0.1"
+    scale="0.3 0.3 0.3"
     shadow-intensity="1"
     camera-controls
   >
@@ -63,6 +96,8 @@
   <script>
     const viewer = document.getElementById('ar-viewer');
     const button = document.getElementById('launch-ar');
+    const instruction = document.getElementById('ar-instruction');
+    let arActive = false;
 
     button.addEventListener('click', () => {
       if (viewer.canActivateAR) {
@@ -71,6 +106,37 @@
         alert('La modalità AR non è supportata su questo dispositivo.');
       }
     });
+
+    // Mostra/nasconde il bottone quando la sessione AR parte/finisce
+    viewer.addEventListener('ar-status', (event) => {
+      if (event.detail.status === 'session-started') {
+        button.style.display = 'none';
+        // Mostra l'istruzione SOLO in WebXR (browser)
+        if (navigator.userAgent.includes('Android') || navigator.userAgent.includes('iPhone')) {
+          // Su mobile nativo, le istruzioni non sono gestibili da qui
+          // Ma WebXR su mobile è raro, quindi mostriamo sempre in sessione AR
+          instruction.style.display = 'block';
+          arActive = true;
+        }
+      }
+      if (event.detail.status === 'not-presenting') {
+        button.style.display = 'block';
+        instruction.style.display = 'none';
+        arActive = false;
+      }
+    });
+
+    // Nasconde il messaggio dopo il TAP per posizionare il modello (solo WebXR)
+    viewer.addEventListener('ar-placement', () => {
+      if (arActive) {
+        instruction.style.display = 'none';
+      }
+    });
+
+    // Opzionale: blocca lo scroll su mobile
+    document.body.addEventListener('touchmove', function(e) {
+      e.preventDefault();
+    }, { passive: false });
   </script>
 
 </body>
