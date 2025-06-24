@@ -62,4 +62,16 @@
 
   <script>
     const viewer = document.getElementById('ar-viewer');
-    const button = document.getElementById
+    const button = document.getElementById('launch-ar');
+
+    button.addEventListener('click', () => {
+      if (viewer.canActivateAR) {
+        viewer.activateAR();
+      } else {
+        alert('La modalità AR non è supportata su questo dispositivo.');
+      }
+    });
+  </script>
+
+</body>
+</html>
