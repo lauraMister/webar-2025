@@ -34,43 +34,32 @@
     }
 
     model-viewer {
-      display: none; /* Il modello non viene mostrato nella pagina */
+      display: none; /* Non mostra il modello sulla pagina */
     }
   </style>
 </head>
 <body>
 
-  <!-- Bottone per attivare direttamente l'AR -->
+  <!-- Bottone centrale per attivare AR -->
   <button class="start-button" id="launch-ar">Visualizza in AR</button>
 
-  <!-- Componente model-viewer configurato solo per AR -->
+  <!-- Componente AR nascosto -->
   <model-viewer
     id="ar-viewer"
     src="model.glb"
     ios-src="model.usdz"
-    alt="Modello AR"
+    alt="Modello 3D in AR"
     ar
     ar-modes="scene-viewer webxr quick-look"
-    camera-controls
     ar-placement="auto"
-    ar-scale="auto"
+    ar-scale="fixed"
+    scale="0.3 0.3 0.3"
     shadow-intensity="1"
+    camera-controls
   >
     <button slot="ar-button">Visualizza in AR</button>
   </model-viewer>
 
   <script>
     const viewer = document.getElementById('ar-viewer');
-    const button = document.getElementById('launch-ar');
-
-    button.addEventListener('click', () => {
-      if (viewer.canActivateAR) {
-        viewer.activateAR();
-      } else {
-        alert('La modalità AR non è supportata su questo dispositivo.');
-      }
-    });
-  </script>
-
-</body>
-</html>
+    const button = document.getElementById
