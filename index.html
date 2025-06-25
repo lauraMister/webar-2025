@@ -6,6 +6,8 @@
     <title>Biblioteca Classense</title>
     <!-- Importa il font Metamorphous da Google Fonts -->
     <link href="https://fonts.googleapis.com/css2?family=Metamorphous&display=swap" rel="stylesheet">
+    <!-- model-viewer -->
+    <script type="module" src="https://unpkg.com/@google/model-viewer/dist/model-viewer.min.js"></script>
     <style>
         body {
             background-color: #FAF33E;
@@ -55,7 +57,6 @@
             background-color: #43535C;
             transform: scale(1.04);
         }
-        /* Banner AR */
         .ar-banner {
             position: fixed;
             left: 50%;
@@ -66,9 +67,9 @@
             background-color: #D6F8D6;
             color: #55505C;
             font-family: 'Metamorphous', cursive;
-            font-size: 1.2em;
+            font-size: 1.15em;
             text-align: center;
-            padding: 18px 24px;
+            padding: 18px 24px 28px 24px;
             border-radius: 16px;
             box-shadow: 0 4px 16px rgba(0,0,0,0.08);
             opacity: 0;
@@ -76,22 +77,37 @@
             transition:
                 opacity 1s,
                 top 1s cubic-bezier(0.6,0.7,0.3,1.1);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 20px;
         }
         .ar-banner.visible {
             opacity: 1;
             top: 40px;
         }
-        /* Video camera AR */
-        #ar-video {
-            display: none;
-            width: 100vw;
-            height: 100vh;
-            object-fit: cover;
-            position: fixed;
-            top: 0; left: 0;
-            z-index: 500;
+        .ar-launch-btn {
+            background-color: #55505C;
+            color: #fff;
+            border: none;
+            border-radius: 8px;
+            padding: 14px 40px;
+            font-family: 'Metamorphous', cursive;
+            font-size: 1.15em;
+            cursor: pointer;
+            transition: background 0.2s, transform 0.2s;
+            box-shadow: 0 2px 8px rgba(85, 80, 92, 0.10);
         }
-        /* Responsive per smartphone */
+        .ar-launch-btn:hover {
+            background-color: #3a3840;
+            transform: scale(1.04);
+        }
+        #hidden-model-viewer {
+            width: 0;
+            height: 0;
+            position: absolute;
+            left: -9999px;
+        }
         @media (max-width: 600px) {
             h1 {
                 font-size: 2em;
@@ -101,15 +117,14 @@
                 font-size: 1em;
                 padding: 14px 24px;
             }
-            body {
-                height: auto;
-                min-height: 100vh;
-                padding-top: 40px;
-                padding-bottom: 40px;
-            }
             .ar-banner {
                 font-size: 1em;
-                padding: 16px 10px;
+                padding: 14px 10px 22px 10px;
+            }
+            .ar-launch-btn {
+                font-size: 1em;
+                padding: 12px 18vw;
+                min-width: 120px;
             }
         }
     </style>
@@ -117,18 +132,27 @@
 <body>
     <h1 id="main-title">Benvenuto nella Biblioteca Classense!</h1>
     <button class="ar-button" id="ar-button">avvia AR</button>
-    <video id="ar-video" autoplay playsinline></video>
+
     <div class="ar-banner" id="ar-banner">
-        clicca una superfice per posizionare la tua guida all'interno della biblioteca
+        <span>clicca una superfice per posizionare la tua guida all'interno della biblioteca</span>
+        <button class="ar-launch-btn" id="ar-launch-btn">Vedi in AR</button>
     </div>
+    <!-- model-viewer nascosto, usato solo per far partire l'AR -->
+    <model-viewer 
+        id="hidden-model-viewer"
+        src="black_cat.glb"
+        ar 
+        ar-modes="scene-viewer quick-look webxr"
+        alt="Modello 3D di una guida biblioteca">
+    </model-viewer>
     <script>
         window.addEventListener('DOMContentLoaded', function() {
             const title = document.getElementById('main-title');
             const button = document.getElementById('ar-button');
-            const video = document.getElementById('ar-video');
             const banner = document.getElementById('ar-banner');
+            const arLaunchBtn = document.getElementById('ar-launch-btn');
+            const modelViewer = document.getElementById('hidden-model-viewer');
 
-            // Fade-in h1 e bottone come prima
             setTimeout(() => {
                 title.classList.add('visible');
             }, 500);
@@ -136,28 +160,21 @@
                 button.classList.add('visible');
             }, 1500);
 
-            button.addEventListener('click', async function() {
-                // Nascondi titolo e bottone
+            button.addEventListener('click', function() {
                 title.style.display = 'none';
                 button.style.display = 'none';
 
-                // Mostra il video a tutto schermo e prova ad accedere alla fotocamera
-                video.style.display = 'block';
-                try {
-                    const stream = await navigator.mediaDevices.getUserMedia({ video: { facingMode: "environment" }, audio: false });
-                    video.srcObject = stream;
-                } catch (err) {
-                    alert('Impossibile accedere alla fotocamera. Consenti l\'accesso alla fotocamera per usare la realtà aumentata.');
-                    video.style.display = 'none';
-                    // Mostra di nuovo titolo e bottone
-                    title.style.display = '';
-                    button.style.display = '';
-                    return;
-                }
-                // Dopo 0,5s mostra il banner con animazione
                 setTimeout(() => {
                     banner.classList.add('visible');
                 }, 500);
+            });
+
+            arLaunchBtn.addEventListener('click', function() {
+                if (modelViewer.activateAR) {
+                    modelViewer.activateAR();
+                } else {
+                    modelViewer.click();
+                }
             });
         });
     </script>
