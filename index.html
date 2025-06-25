@@ -15,6 +15,18 @@
             align-items: center;
             height: 100vh;
             margin: 0;
+            position: relative;
+        }
+        h1, .ar-button {
+            opacity: 0;
+            transform: translateY(-40px);
+            transition:
+                opacity 1s,
+                transform 1s;
+        }
+        h1.visible, .ar-button.visible {
+            opacity: 1;
+            transform: translateY(0);
         }
         h1 {
             color: #55505C;
@@ -33,19 +45,57 @@
             border-radius: 8px;
             font-family: inherit;
             cursor: pointer;
-            transition: background 0.2s, transform 0.1s;
+            transition:
+                background 0.2s,
+                transform 1s,
+                opacity 1s;
             box-shadow: 0 2px 8px rgba(93, 115, 126, 0.15);
         }
         .ar-button:hover {
             background-color: #43535C;
             transform: scale(1.04);
         }
-
-        /* --- Aggiunta per smartphone --- */
+        /* Banner AR */
+        .ar-banner {
+            position: fixed;
+            left: 50%;
+            top: -100px;
+            transform: translateX(-50%);
+            min-width: 280px;
+            max-width: 90vw;
+            background-color: #D6F8D6;
+            color: #55505C;
+            font-family: 'Metamorphous', cursive;
+            font-size: 1.2em;
+            text-align: center;
+            padding: 18px 24px;
+            border-radius: 16px;
+            box-shadow: 0 4px 16px rgba(0,0,0,0.08);
+            opacity: 0;
+            z-index: 1000;
+            transition:
+                opacity 1s,
+                top 1s cubic-bezier(0.6,0.7,0.3,1.1);
+        }
+        .ar-banner.visible {
+            opacity: 1;
+            top: 40px;
+        }
+        /* Video camera AR */
+        #ar-video {
+            display: none;
+            width: 100vw;
+            height: 100vh;
+            object-fit: cover;
+            position: fixed;
+            top: 0; left: 0;
+            z-index: 500;
+        }
+        /* Responsive per smartphone */
         @media (max-width: 600px) {
             h1 {
                 font-size: 2em;
-                padding: 0 8px; /* margine ai lati */
+                padding: 0 8px;
             }
             .ar-button {
                 font-size: 1em;
@@ -57,11 +107,59 @@
                 padding-top: 40px;
                 padding-bottom: 40px;
             }
+            .ar-banner {
+                font-size: 1em;
+                padding: 16px 10px;
+            }
         }
     </style>
 </head>
 <body>
-    <h1>Benvenuto nella Biblioteca Classense!</h1>
-    <button class="ar-button">avvia AR</button>
+    <h1 id="main-title">Benvenuto nella Biblioteca Classense!</h1>
+    <button class="ar-button" id="ar-button">avvia AR</button>
+    <video id="ar-video" autoplay playsinline></video>
+    <div class="ar-banner" id="ar-banner">
+        clicca una superfice per posizionare la tua guida all'interno della biblioteca
+    </div>
+    <script>
+        window.addEventListener('DOMContentLoaded', function() {
+            const title = document.getElementById('main-title');
+            const button = document.getElementById('ar-button');
+            const video = document.getElementById('ar-video');
+            const banner = document.getElementById('ar-banner');
+
+            // Fade-in h1 e bottone come prima
+            setTimeout(() => {
+                title.classList.add('visible');
+            }, 500);
+            setTimeout(() => {
+                button.classList.add('visible');
+            }, 1500);
+
+            button.addEventListener('click', async function() {
+                // Nascondi titolo e bottone
+                title.style.display = 'none';
+                button.style.display = 'none';
+
+                // Mostra il video a tutto schermo e prova ad accedere alla fotocamera
+                video.style.display = 'block';
+                try {
+                    const stream = await navigator.mediaDevices.getUserMedia({ video: { facingMode: "environment" }, audio: false });
+                    video.srcObject = stream;
+                } catch (err) {
+                    alert('Impossibile accedere alla fotocamera. Consenti l\'accesso alla fotocamera per usare la realtà aumentata.');
+                    video.style.display = 'none';
+                    // Mostra di nuovo titolo e bottone
+                    title.style.display = '';
+                    button.style.display = '';
+                    return;
+                }
+                // Dopo 0,5s mostra il banner con animazione
+                setTimeout(() => {
+                    banner.classList.add('visible');
+                }, 500);
+            });
+        });
+    </script>
 </body>
 </html>
