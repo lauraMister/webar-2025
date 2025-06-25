@@ -1,138 +1,67 @@
 <!DOCTYPE html>
 <html lang="it">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no" />
-  <title>Esperienza AR</title>
-  <script type="module" src="https://unpkg.com/@google/model-viewer/dist/model-viewer.min.js"></script>
-  <style>
-    html, body {
-      margin: 0;
-      padding: 0;
-      height: 100%;
-      width: 100%;
-      background: #000;
-      font-family: sans-serif;
-      overflow: hidden;
-    }
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Biblioteca Classense</title>
+    <!-- Importa il font Metamorphous da Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Metamorphous&display=swap" rel="stylesheet">
+    <style>
+        body {
+            background-color: #FAF33E;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
+        }
+        h1 {
+            color: #55505C;
+            font-size: 3em;
+            text-align: center;
+            font-family: 'Metamorphous', cursive;
+            margin-bottom: 40px;
+            padding: 0 16px;
+        }
+        .ar-button {
+            background-color: #5D737E;
+            color: #fff;
+            font-size: 1.5em;
+            padding: 18px 48px;
+            border: none;
+            border-radius: 8px;
+            font-family: inherit;
+            cursor: pointer;
+            transition: background 0.2s, transform 0.1s;
+            box-shadow: 0 2px 8px rgba(93, 115, 126, 0.15);
+        }
+        .ar-button:hover {
+            background-color: #43535C;
+            transform: scale(1.04);
+        }
 
-    body {
-      display: flex;
-      justify-content: center;
-      align-items: center;
-      height: 100vh;
-      width: 100vw;
-    }
-
-    .start-button {
-      position: absolute;
-      left: 50%;
-      top: 50%;
-      transform: translate(-50%, -50%);
-      background: #fff;
-      color: #000;
-      padding: 16px 28px;
-      font-size: 18px;
-      border: none;
-      border-radius: 8px;
-      cursor: pointer;
-      box-shadow: 0 4px 8px rgba(0,0,0,0.4);
-      transition: transform 0.2s ease;
-      z-index: 10;
-    }
-    .start-button:active {
-      transform: translate(-50%, -50%) scale(0.95);
-    }
-
-    .ar-instruction {
-      position: absolute;
-      top: 20px;
-      left: 50%;
-      transform: translateX(-50%);
-      background: rgba(0,0,0,0.75);
-      color: #fff;
-      padding: 12px 24px;
-      border-radius: 20px;
-      font-size: 18px;
-      z-index: 20;
-      display: none;
-      pointer-events: none;
-      text-align: center;
-      max-width: 90vw;
-    }
-
-    model-viewer {
-      display: none; /* Mostrato solo tramite JS */
-    }
-  </style>
+        /* --- Aggiunta per smartphone --- */
+        @media (max-width: 600px) {
+            h1 {
+                font-size: 2em;
+                padding: 0 8px; /* margine ai lati */
+            }
+            .ar-button {
+                font-size: 1em;
+                padding: 14px 24px;
+            }
+            body {
+                height: auto;
+                min-height: 100vh;
+                padding-top: 40px;
+                padding-bottom: 40px;
+            }
+        }
+    </style>
 </head>
 <body>
-
-  <!-- Bottone centrale per attivare AR -->
-  <button class="start-button" id="launch-ar">Visualizza in AR</button>
-
-  <!-- Overlay istruzioni AR -->
-  <div class="ar-instruction" id="ar-instruction">
-    Tocca una superficie per posizionare il modello
-  </div>
-
-  <!-- Componente AR nascosto -->
-  <model-viewer
-    id="ar-viewer"
-    src="model.glb"
-    ios-src="model.usdz"
-    alt="Modello 3D in AR"
-    ar
-    ar-modes="scene-viewer webxr quick-look"
-    ar-placement="tap"
-    ar-scale="fixed"
-    scale="0.05 0.05 0.05"
-    shadow-intensity="1"
-    camera-controls
-  >
-    <button slot="ar-button">Visualizza in AR</button>
-  </model-viewer>
-
-  <script>
-    const viewer = document.getElementById('ar-viewer');
-    const button = document.getElementById('launch-ar');
-    const instruction = document.getElementById('ar-instruction');
-    let arActive = false;
-
-    button.addEventListener('click', () => {
-      if (viewer.canActivateAR) {
-        viewer.activateAR();
-      } else {
-        alert('La modalità AR non è supportata su questo dispositivo.');
-      }
-    });
-
-    // Mostra/nasconde il bottone quando la sessione AR parte/finisce
-    viewer.addEventListener('ar-status', (event) => {
-      if (event.detail.status === 'session-started') {
-        button.style.display = 'none';
-        instruction.style.display = 'block';
-        arActive = true;
-      }
-      if (event.detail.status === 'not-presenting') {
-        button.style.display = 'block';
-        instruction.style.display = 'none';
-        arActive = false;
-      }
-    });
-
-    // Nasconde il messaggio dopo il TAP per posizionare il modello (solo WebXR)
-    viewer.addEventListener('ar-placement', () => {
-      if (arActive) {
-        instruction.style.display = 'none';
-      }
-    });
-
-    // Opzionale: blocca lo scroll su mobile
-    document.body.addEventListener('touchmove', function(e) {
-      e.preventDefault();
-    }, { passive: false });
-  </script>
-
+    <h1>Benvenuto nella Biblioteca Classense!</h1>
+    <button class="ar-button">avvia AR</button>
 </body>
 </html>
